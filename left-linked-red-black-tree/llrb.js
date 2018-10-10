@@ -3,18 +3,22 @@ const BLACK = false
 const RED = true
 
 class Node {
-    constructor(key, value) {
+    constructor(key, value, color=BLACK) {
         this.key = key;
         this.value = value;
         this.left = null;
         this.right = null;
-        this.color = BLACK;
+        this.color = color;
     }
 }
 
 class LLRBT {
     constructor() {
         this.root = null;
+    }
+
+    put(key, value) {
+        this.root = this._put(key, value, this.root);
     }
 
     isRed(node) {
@@ -32,6 +36,17 @@ class LLRBT {
 
     isBST() {
         return this._isBST(this.root, null, null)
+    }
+
+    _put(key, value, root) {
+        if (root === null) return new Node(key, value, RED);
+        if (key < root.key) root.left = this._put(key, value, root.left)
+        else if (key > root.key)  root.right = this._put(key, value, root.right)
+        else root.value = value;
+        if (this.isRed(root.right) && !this.isRed(root.left)) root = this._rotateLeft(root);
+        if (this.isRed(root.left) && !this.isRed(root.left.left)) root = this._rotateRight(root);
+        if (this.isRed(root.left) && this.isRed(root.right)) root = this._flipColors(root);
+        return root;
     }
 
     _isBalanced(node) {
